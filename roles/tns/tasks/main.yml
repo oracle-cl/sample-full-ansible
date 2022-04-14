@@ -1,0 +1,24 @@
+---
+- name: Directorio tns
+  file:
+    path: /home/opc/tns
+    state: directory
+
+- name: Copiar Todo
+  copy:
+    src: "{{ item }}"
+    dest: /home/opc/tns/
+    mode: "0755"
+  with_fileglob: "*"
+
+- name: Recupera Wallet
+  shell: chdir=/home/opc/tns cat wallet.zip.base64 | base64 -d > wallet.zip
+
+- name: Unzip Wallet
+  command: chdir=/home/opc/tns unzip -o wallet.zip
+
+- name: Edita sqlnet.ora
+  command: chdir=/home/opc/tns sed -i '1,$s#?/network/admin#/home/opc/tns#' sqlnet.ora
+
+- name: Asigne TNS_ADMIN
+  command: chdir=/home/opc echo "export TNS_ADMIN=/home/opc/tns" >> .bashrc

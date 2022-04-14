@@ -1,0 +1,22 @@
+---
+- hosts: bastion
+  vars_files:
+    - globales.yaml
+  roles:
+    - tns
+- hosts: linux
+  vars_files:
+    - globales.yaml
+  roles:
+    - tns
+- hosts: bastion
+  vars_files:
+    - globales.yaml
+  roles:
+    - sql
+- hosts: linux
+  remote_user: opc
+  vars_files:
+    - globales.yaml
+  roles:
+    - inicia

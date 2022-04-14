@@ -1,0 +1,15 @@
+---
+- name: Directorio de Trabajo
+  file:
+    path: /home/opc/sql
+    state: directory
+
+- name: Copiar Todo
+  copy:
+    src: "{{ item }}"
+    dest: /home/opc/sql/
+    mode: "0755"
+  with_fileglob: "*"
+
+- name: Inicia BD
+  shell: chdir=/home/opc/sql export TNS_ADMIN=/home/opc/tns ; sqlplus admin/{{ password }}@{{ ambiente }}_medium @inicia.sql

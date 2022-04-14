@@ -1,0 +1,77 @@
+---
+- name: instala golang
+  become: yes
+  become_user: root
+  yum:
+       name: 'golang'
+       state: present
+       update_cache: True
+
+- name: Directorio de Trabajo
+  file:
+    path: /home/opc/app
+    state: directory
+- name: Stop firewalld
+  become: yes
+  become_method: sudo
+  become_user: root
+  systemd:
+    name: firewalld
+    state: stopped
+- name: Puertos
+  become: yes
+  become_method: sudo
+  become_user: root
+  firewalld:
+    port: 80/tcp
+    permanent: true
+    state: enabled
+- name: Start firewalld
+  become: yes
+  become_method: sudo
+  become_user: root
+  systemd:
+    state: started
+    name: firewalld
+- name: Copiar Todo
+  copy:
+    src: "{{ item }}"
+    dest: /home/opc/app/
+    mode: "0755"
+  with_fileglob: "*"
+
+- name: Genera MOTD
+  command: chdir=/home/opc/app /bin/bash genMOTD.sh {{ ambiente }}
+
+- name: Carga modulo go godror
+  become: yes
+  become_method: sudo
+  become_user: root
+  command: chdir=/home/opc/app go mod download github.com/godror/godror
+
+- name: Carga modulo go xerrors
+  become: yes
+  become_method: sudo
+  become_user: root
+  command: chdir=/home/opc/app go mod download golang.org/x/xerrors
+
+- name: Inicializa Web
+  become: yes
+  become_method: sudo
+  become_user: root
+  shell: chdir=/home/opc/app ./martinApp.sh {{ambiente}} admin/{{ password }}@{{ ambiente }}_medium 1 2
+
+- name: Espera HTTP
+  shell: chdir=/home/opc/app ./esperaHTTP.sh localhost 20
+
+- name: Ejecuta Web
+  become: yes
+  become_method: sudo
+  become_user: root
+  shell: chdir=/home/opc/app ./martinApp.sh {{ambiente}} admin/{{ password }}@{{ ambiente }}_medium 1 2
+
+- name: Espera HTTP
+  shell: chdir=/home/opc/app ./esperaHTTP.sh localhost 30
+
+- name: Prueba curl
+  command: curl -s localhost
