@@ -74,4 +74,4 @@
   shell: chdir=/home/opc/app ./esperaHTTP.sh localhost 30
 
 - name: Prueba curl
-  command: curl -s localhost
+  get_url: http://localhost
