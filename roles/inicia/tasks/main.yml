@@ -72,8 +72,3 @@
 
 - name: Espera HTTP
   shell: chdir=/home/opc/app ./esperaHTTP.sh localhost 30
-
-- name: Prueba curl
-  get_url: 
-    url: http://localhost
-    dest: test.html
