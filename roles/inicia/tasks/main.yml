@@ -71,4 +71,4 @@
   shell: chdir=/home/opc/app ./martinApp.sh {{ambiente}} admin/{{ password }}@{{ ambiente }}_medium 1 2
 
 - name: Espera HTTP
-  shell: chdir=/home/opc/app ./esperaHTTP.sh localhost 30
+  shell: chdir=/home/opc/app  ./esperaHTTP.sh localhost 30
